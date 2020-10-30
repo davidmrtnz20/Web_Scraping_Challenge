@@ -5,25 +5,24 @@ import scrape_mars
 
 app = Flask(__name__)
 
-mongo = PyMongo(app)
+conn = "mongodb://localhost:27017"
+client = pymongo.MongoClient(conn)
 
-# Render the index.html page with any craigslist listings in our database. 
-# If there are no listings, the table will be empty.
+db = client.mars_db
+collection = db.mission_to_mars
+
 @app.route("/")
 def index():
-    listing_results = listings.find()
-    return render_template("index.html", listing_results=listing_results)
+    mars_data = list(db.collection.find())[0]
+    return render_template("index.html", mars_data=mars_data)
 
-# This route will trigger the webscraping, but it will then send us back to the index route to render the results
 @app.route("/scrape")
 def scraper():
+    db.collection.remove({})
+    mars_data = scraped_data.scrape()
+    db.collection.insert_one(mars_data)
+    return render_template("scraped_data.html")
 
-    # scrape_craigslist.scrape() is a custom function that we've defined in the scrape_craigslist.py file within this directory
-    listings_data = scrape_craigslist.scrape(search_term="mountain bike")
-    listings.insert_many(listings_data)
-    
-    # Use Flask's redirect function to send us to a different route once this task has completed.
-    return redirect("/")
 
 
 if __name__ == "__main__":
