@@ -32,6 +32,7 @@ def marsFacts():
     tables = pd.read_html(facts_url)
     tables = pd.DataFrame(tables[0])
     mars_table = tables.to_html(index=True,header=True)
+    return mars_table
 
 def marsHemisphere():
     hemisphere_url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
@@ -53,4 +54,14 @@ def marsHemisphere():
         hemisphere_image_urls.append({"title":img_title,"img_url":full_img_url})
 
     return hemisphere_image_urls
+
+def scrape():
+    scraped_data = {}
+    output = marsNews()
+    scraped_data['mars_news'] = output[0]
+    scraped_data['mars_article'] = output[1]
+    scraped_data['mars_images'] = marsImages()
+    scraped_data['mars_facts'] = marsFacts()
+    scraped_data['mars_hemisphere'] = marsHemisphere()
+    return scraped_data
 
