@@ -5,6 +5,16 @@ import pandas as pd
 executable_path = {'executable_path': '/Users/Milo/Downloads/chromedriver_win32/chromedriver'}
 browser = Browser('chrome', **executable_path, headless=False)
 
+def scrape():
+    scraped_data = {}
+    output = marsNews()
+    scraped_data['mars_news'] = output[0]
+    scraped_data['mars_article'] = output[1]
+    scraped_data['mars_images'] = marsImages()
+    scraped_data['mars_facts'] = marsFacts()
+    scraped_data['mars_hemisphere'] = marsHemisphere()
+    return scraped_data
+
 def marsNews():
     news_url = 'https://mars.nasa.gov/news/'
     browser.visit(news_url)
@@ -13,8 +23,8 @@ def marsNews():
     article = soup.find('div', class_="list_text")
     news_title = article.find('div', class_="content_title").text
     news_p = article.find('div', class_="article_teaser_body").text
-    return news_title
-    return news_p
+    output = [news_title, news_p]
+    return output
 
 def marsImages():
     images_url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
@@ -54,14 +64,4 @@ def marsHemisphere():
         hemisphere_image_urls.append({"title":img_title,"img_url":full_img_url})
 
     return hemisphere_image_urls
-
-def scrape():
-    scraped_data = {}
-    output = marsNews()
-    scraped_data['mars_news'] = output[0]
-    scraped_data['mars_article'] = output[1]
-    scraped_data['mars_images'] = marsImages()
-    scraped_data['mars_facts'] = marsFacts()
-    scraped_data['mars_hemisphere'] = marsHemisphere()
-    return scraped_data
 
